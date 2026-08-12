@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pay Pawan Meena — UPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --paper:#F6F1E4;
+    --paper-dark:#EFE7D3;
+    --ink:#201F1D;
+    --ink-soft:#5B564C;
+    --indigo:#2E3A59;
+    --stamp:#B23A2E;
+    --line:#C9BFA6;
+    --gold:#C9A227;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(46,58,89,0.05), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(178,58,46,0.05), transparent 40%),
+      var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+
+  /* subtle paper grain */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, transparent 1px, transparent 2px);
+    opacity:0.6;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:420px;
+  }
+
+  .eyebrow{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+
+  .slip{
+    position:relative;
+    background:#FFFDF8;
+    border:1px solid var(--ink);
+    box-shadow:6px 6px 0 var(--indigo);
+  }
+
+  .slip-head{
+    padding:26px 28px 20px;
+    border-bottom:1px dashed var(--line);
+    text-align:center;
+  }
+
+  .slip-head .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  .slip-head h1{
+    font-family:'Special Elite', 'IBM Plex Mono', monospace;
+    font-size:30px;
+    line-height:1.15;
+    margin:0 0 6px;
+    letter-spacing:0.01em;
+  }
+
+  .slip-head .phone{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+
+  .perforation{
+    position:relative;
+    height:0;
+  }
+  .perforation::before{
+    content:"";
+    position:absolute;
+    top:-8px; left:0; right:0;
+    height:16px;
+    background-image:radial-gradient(circle, var(--paper) 6px, transparent 6.5px);
+    background-size:22px 16px;
+    background-repeat:repeat-x;
+    background-position:center;
+  }
+
+  .qr-zone{
+    padding:28px 28px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .qr-frame{
+    position:relative;
+    padding:14px;
+    background:#fff;
+    border:1px solid var(--ink);
+  }
+  .qr-frame::after{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px dashed var(--line);
+    pointer-events:none;
+  }
+
+  #qrcode{
+    width:200px;
+    height:200px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #qrcode img{ image-rendering:pixelated; }
+
+  .stamp{
+    position:absolute;
+    top:-14px;
+    right:-14px;
+    width:64px;
+    height:64px;
+    border:2px solid var(--stamp);
+    border-radius:50%;
+    color:var(--stamp);
+    font-family:'Special Elite', monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transform:rotate(14deg);
+    opacity:0.85;
+    background:rgba(255,253,248,0.9);
+  }
+
+  .upi-id-row{
+    margin-top:18px;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    padding:10px 12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  .upi-id-row span{
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .copy-btn{
+    border:1px solid var(--ink);
+    background:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .copy-btn:hover{ background:var(--ink); color:#fff; }
+  .copy-btn:active{ transform:translateY(1px); }
+
+  .amount-zone{
+    padding:20px 28px 8px;
+  }
+  .field-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    display:block;
+  }
+  .amount-input-row{
+    display:flex;
+    align-items:baseline;
+    border-bottom:1px solid var(--ink);
+    padding-bottom:6px;
+    gap:6px;
+  }
+  .amount-input-row .rupee{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px;
+  }
+  .amount-input-row input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px;
+    color:var(--ink);
+    min-width:0;
+  }
+  .amount-input-row input::placeholder{ color:#B7AF9B; }
+
+  .note-field{
+    margin-top:16px;
+  }
+  .note-field input{
+    width:100%;
+    border:none;
+    border-bottom:1px solid var(--line);
+    outline:none;
+    background:transparent;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    padding:6px 0;
+    color:var(--ink);
+  }
+  .note-field input::placeholder{ color:#B7AF9B; }
+
+  .actions{
+    padding:22px 28px 28px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .pay-btn{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background:var(--indigo);
+    color:#FFFDF8;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:14px;
+    border:1px solid var(--indigo);
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .pay-btn:hover{ transform:translateY(-1px); box-shadow:3px 3px 0 var(--stamp); }
+  .pay-btn:active{ transform:translateY(0); box-shadow:none; }
+
+  .hint{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  .footer-note{
+    text-align:center;
+    margin-top:18px;
+    font-size:11px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing:0.05em;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);
+    color:#FFFDF8;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    padding:10px 16px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .pay-btn, .copy-btn, .toast{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">— Payment Slip —</div>
+
+  <div class="slip">
+    <div class="slip-head">
+      <div class="label">Pay to</div>
+      <h1>Pawan Meena</h1>
+      <div class="phone">8107810442</div>
+    </div>
+
+    <div class="perforation"></div>
+
+    <div class="qr-zone">
+      <div class="qr-frame">
+        <div class="stamp">UPI<br>VERIFIED</div>
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="upi-id-row">
+        <span id="upiIdText">paytmqr5ob0gc@ptys</span>
+        <button class="copy-btn" id="copyBtn" type="button">Copy</button>
+      </div>
+    </div>
+
+    <div class="amount-zone">
+      <label class="field-label" for="amount">Amount (optional)</label>
+      <div class="amount-input-row">
+        <span class="rupee">₹</span>
+        <input type="number" id="amount" inputmode="decimal" min="0" placeholder="0.00">
+      </div>
+      <div class="note-field">
+        <label class="field-label" for="note">Note (optional)</label>
+        <input type="text" id="note" placeholder="What's this for?">
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="pay-btn" id="payBtn" href="#">Open in UPI app</a>
+      <div class="hint">Or scan the QR above with any UPI app</div>
+      <div class="hint" id="desktopHint" style="display:none;">Works on a phone with a UPI app installed — scan the QR instead on desktop</div>
+    </div>
+  </div>
+
+  <div class="footer-note">Paytm · UPI · UPI Lite</div>
+</div>
+
+<div class="toast" id="toast">Copied UPI ID</div>
+
+<script>
+  const UPI_ID = "paytmqr5ob0gc@ptys";
+  const PAYEE_NAME = "Pawan Meena";
+
+  const qrDiv = document.getElementById('qrcode');
+  const amountInput = document.getElementById('amount');
+  const noteInput = document.getElementById('note');
+  const payBtn = document.getElementById('payBtn');
+  let qrObj = null;
+
+  function buildUpiUri(){
+    const params = new URLSearchParams();
+    params.set('pa', UPI_ID);
+    params.set('pn', PAYEE_NAME);
+    params.set('cu', 'INR');
+    const amt = amountInput.value.trim();
+    if(amt && parseFloat(amt) > 0){
+      params.set('am', parseFloat(amt).toFixed(2));
+    }
+    const note = noteInput.value.trim();
+    if(note){
+      params.set('tn', note);
+    }
+    return 'upi://pay?' + params.toString();
+  }
+
+  function renderQr(){
+    qrDiv.innerHTML = '';
+    qrObj = new QRCode(qrDiv, {
+      text: buildUpiUri(),
+      width: 200,
+      height: 200,
+      colorDark: '#201F1D',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  function updateAll(){
+    renderQr();
+    payBtn.setAttribute('href', buildUpiUri());
+  }
+
+  amountInput.addEventListener('input', updateAll);
+  noteInput.addEventListener('input', updateAll);
+
+  payBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    const uri = buildUpiUri();
+    if(isMobile){
+      window.location.href = uri;
+    } else {
+      document.getElementById('desktopHint').style.display = 'block';
+    }
+  });
+
+  updateAll();
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(UPI_ID);
+    }catch(e){
+      const t = document.createElement('textarea');
+      t.value = UPI_ID;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      document.body.removeChild(t);
+    }
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1600);
+  });
+</script>
+</body>
+</html>
